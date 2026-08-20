@@ -1,9 +1,9 @@
-from graph import app
+from agent_graph import agent_app
 from retriever import close_qdrant
 
 
 # ==========================================
-# MAIN CHAT LOOP
+# MAIN AGENT LOOP
 # ==========================================
 
 while True:
@@ -12,49 +12,29 @@ while True:
         "\nAsk a question (or type 'exit'): "
     )
 
-    # Exit the application
+    # Exit
     if question.lower().strip() == "exit":
         break
 
     try:
 
-        # ==========================================
-        # INITIAL GRAPH STATE
-        # ==========================================
-
-        result = app.invoke({
-
+        # Run Agent Graph
+        result = agent_app.invoke({
             "question": question,
-
-            "documents": [],
-
-            "answer": "",
-
-            "route": "",
-
-            "document_grade": "",
-
-            "rewrite_count": 0
+            "action": "",
+            "tool_result": "",
+            "answer": ""
         })
 
-
-        # ==========================================
-        # FINAL ANSWER
-        # ==========================================
-
+        # Print final answer
         print("\nFINAL ANSWER:")
 
         if result.get("answer"):
-
             print(result["answer"])
-
         else:
-
             print(
-                "I could not find a relevant answer "
-                "in the provided documents."
+                "No answer was generated."
             )
-
 
     except Exception as e:
 
@@ -67,4 +47,4 @@ while True:
 
 close_qdrant()
 
-print("\nRAG system closed.")
+print("\nAgent system closed.")

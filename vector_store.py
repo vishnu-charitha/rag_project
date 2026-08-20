@@ -1,27 +1,44 @@
 from qdrant_client import QdrantClient
 from qdrant_client.models import VectorParams, Distance
+
 from langchain_qdrant import QdrantVectorStore
 
 from text_splitter import chunks
 from embeddings import embeddings
 
 
-# Create local Qdrant database
-client = QdrantClient(path="./qdrant_data")
+# ==========================================
+# CREATE LOCAL QDRANT DATABASE
+# ==========================================
+
+client = QdrantClient(
+    path="./qdrant_data"
+)
 
 
-# Collection name
+# ==========================================
+# COLLECTION NAME
+# ==========================================
+
 collection_name = "company_reports"
 
 
-# Delete old collection if it already exists
+# ==========================================
+# DELETE OLD COLLECTION
+# ==========================================
+
 try:
     client.delete_collection(collection_name)
+    print("Old collection deleted.")
+
 except Exception:
-    pass
+    print("Creating new collection.")
 
 
-# Create a new collection
+# ==========================================
+# CREATE COLLECTION
+# ==========================================
+
 client.create_collection(
     collection_name=collection_name,
     vectors_config=VectorParams(
@@ -31,7 +48,10 @@ client.create_collection(
 )
 
 
-# Connect LangChain with Qdrant
+# ==========================================
+# CONNECT LANGCHAIN + QDRANT
+# ==========================================
+
 vector_store = QdrantVectorStore(
     client=client,
     collection_name=collection_name,
@@ -39,8 +59,13 @@ vector_store = QdrantVectorStore(
 )
 
 
-# Store all chunks
-vector_store.add_documents(chunks)
+# ==========================================
+# STORE DOCUMENTS
+# ==========================================
+
+vector_store.add_documents(
+    documents=chunks
+)
 
 
 print("Successfully stored documents in Qdrant!")
